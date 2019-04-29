@@ -34,7 +34,7 @@ int main(){
 	mat Train = Data.getData().rows(0,end_train+0);
 
 	const int start_test = 591;
-	const int end_test = 750;
+	const int end_test = 755;
 
 	mat Test = Data.getData().rows(start_test,end_test);
 
@@ -48,39 +48,39 @@ int main(){
 //	each sample we have a Network
 
 //	Network initialization Train
-	Net N(layers,fs,ds,/* number of samples : */end_train-9,/*number of threads : */4);
-
-	for(int d = 0 ; d != end_train+1-10 ; ++d){
-	//		For each available date, we calculate a gradient and then we average
-		N.n(d,0,0) = 0; /* N.n(sample,layer,node) */
-		N.setTarget(d) = Train(d+10,0); /* target corresponding do the d th sample*/
-		for(int s = 1 ; s != nassets ; ++s){
-			N.n(d,0,s) = Train(d,s);
-		}
-		N.update(d); /* update for the network corresponding to sample d */
-
-	}
+//	Net N(layers,fs,ds,/* number of samples : */end_train-9,/*number of threads : */4);
+//
+//	for(int d = 0 ; d != end_train+1-10 ; ++d){
+//	//		For each available date, we calculate a gradient and then we average
+//		N.n(d,0,0) = 0; /* N.n(sample,layer,node) */
+//		N.setTarget(d) = Train(d+10,0); /* target corresponding do the d th sample*/
+//		for(int s = 1 ; s != nassets ; ++s){
+//			N.n(d,0,s) = Train(d,s);
+//		}
+//		N.update(d); /* update for the network corresponding to sample d */
+//
+//	}
 
 // 		Network initialization Test
 
-//	 	Net N(layers,fs,ds,/* number of samples : */end_test-start_test-9,/*number of threads : */4);
-// 		for(int d = 0 ; d != end_test-start_test-9 ; ++d){
-// 		//		For each available date, we calculate a gradient and then we average
-// 			N.n(d,0,0) = 0; /* N.n(sample,layer,node) */
-//
-// 			N.setTarget(d) = Test(d+10,0); /* target corresponding do the d th sample*/
-//
-// 			for(int s = 1 ; s != nassets ; ++s){
-// 				N.n(d,0,s) = Test(d,s);
-// 			}
-// 			N.update(d); /* update for the network corresponding to sample d */
-//
-// 		}
+	 	Net N(layers,fs,ds,/* number of samples : */end_test-start_test-9,/*number of threads : */4);
+ 		for(int d = 0 ; d != end_test-start_test-9 ; ++d){
+ 		//		For each available date, we calculate a gradient and then we average
+ 			N.n(d,0,0) = 0; /* N.n(sample,layer,node) */
 
-//	dataframe init(N.getNcoeffs(),1,"Coeffs590assets_batchSize26_11.csv");
-//	N.get_coeffs() = init.getData();
+ 			N.setTarget(d) = Test(d+10,0); /* target corresponding do the d th sample*/
 
-	mat stats = opt::stochastic_descent_adam(&N,/*learning rate*/1e-8,/*stoping condition*/0.01,/* batch size*/590,/*linear search enabled*/false,/*number of epochs*/1,/* minlr*/1e-10);
+ 			for(int s = 1 ; s != nassets ; ++s){
+ 				N.n(d,0,s) = Test(d,s);
+ 			}
+ 			N.update(d); /* update for the network corresponding to sample d */
+
+ 		}
+
+	dataframe init(N.getNcoeffs(),1,"Coeffs590assets_batchSize26_11.csv");
+	N.get_coeffs() = init.getData();
+
+//	mat stats = opt::stochastic_descent(&N,/*learning rate*/1e-8,/*stoping condition*/0.01,/* batch size*/26,/*linear search enabled*/true,/*number of epochs*/10,/* minlr*/1e-10);
 
 	opt::err(&N);
 	opt::result(&N);
